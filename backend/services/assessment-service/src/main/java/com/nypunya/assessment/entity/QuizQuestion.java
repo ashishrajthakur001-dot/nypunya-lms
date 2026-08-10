@@ -1,0 +1,4 @@
+package com.nypunya.assessment.entity;
+import javax.persistence.*;
+@Entity @Table(name="quiz_questions",indexes=@Index(name="idx_question_quiz",columnList="quiz_id"))
+public class QuizQuestion { @Id @GeneratedValue(strategy=GenerationType.IDENTITY) private Long id; @Column(name="quiz_id",nullable=false) private Long quizId; @Column(nullable=false,length=4000) private String prompt; @Column(name="question_order",nullable=false) private Integer questionOrder; @Column(name="points",nullable=false) private Integer points=1; public Long getId(){return id;} public Long getQuizId(){return quizId;} public void setQuizId(Long v){quizId=v;} public String getPrompt(){return prompt;} public void setPrompt(String v){prompt=v;} public Integer getQuestionOrder(){return questionOrder;} public void setQuestionOrder(Integer v){questionOrder=v;} public Integer getPoints(){return points;} public void setPoints(Integer v){points=v;} }
