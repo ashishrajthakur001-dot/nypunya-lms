@@ -31,6 +31,8 @@
     }
   },
   "rewrites": [
+    { "source": "/api/auth/(.*)", "destination": { "service": "user_service" } },
+    { "source": "/api/auth", "destination": { "service": "user_service" } },
     { "source": "/api/users/(.*)", "destination": { "service": "user_service" } },
     { "source": "/api/courses/(.*)", "destination": { "service": "course_service" } },
     { "source": "/api/assignments/(.*)", "destination": { "service": "assignment_service" } },
