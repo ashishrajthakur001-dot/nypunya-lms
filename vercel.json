@@ -1,4 +1,5 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
   "services": {
     "frontend": {
       "root": "frontend/",
@@ -31,6 +32,13 @@
     }
   },
   "rewrites": [
+    {
+      "source": "/api/health",
+      "destination": {
+        "service": "user_service",
+        "path": "/actuator/health"
+      }
+    },
     { "source": "/api/auth/(.*)", "destination": { "service": "user_service" } },
     { "source": "/api/auth", "destination": { "service": "user_service" } },
     { "source": "/api/users/(.*)", "destination": { "service": "user_service" } },
