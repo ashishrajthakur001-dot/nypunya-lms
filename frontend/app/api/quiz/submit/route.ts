@@ -13,14 +13,19 @@ export async function POST(request: Request) {
   const userResponse = await fetch(`${URL}/auth/v1/user`, { headers })
   if (!userResponse.ok) return NextResponse.json({ error: 'Session expired.' }, { status: 401 })
   const user = await userResponse.json()
-  const questionResponse = await fetch(`${URL}/rest/v1/quiz_questions?quiz_id=eq.${quizId}&select=id,correct_option,points`, { headers })
-  const questions = await questionResponse.json()
-  if (!questionResponse.ok) return NextResponse.json({ error: 'Unable to load quiz.' }, { status: 500 })
+  const [quizResponse, questionResponse] = await Promise.all([
+    fetch(`${URL}/rest/v1/quizzes?id=eq.${quizId}&select=id,max_score&limit=1`, { headers }),
+    fetch(`${URL}/rest/v1/quiz_questions?quiz_id=eq.${quizId}&select=id,correct_option,points`, { headers }),
+  ])
+  const quizzes = await quizResponse.json(); const questions = await questionResponse.json()
+  if (!quizResponse.ok || !questionResponse.ok || !quizzes[0]) return NextResponse.json({ error: 'Unable to load quiz.' }, { status: 500 })
+  const rawMax = questions.reduce((sum: number, question: {points:number}) => sum + Number(question.points), 0)
+  const quizMax = Number(quizzes[0].max_score)
   const answerMap = new Map(answers.map((answer: {questionId:string;selectedOption:string}) => [answer.questionId, answer.selectedOption]))
-  let score = 0
-  for (const question of questions) if (answerMap.get(question.id) === question.correct_option) score += Number(question.points)
-  const maxScore = questions.reduce((sum: number, question: {points:number}) => sum + Number(question.points), 0)
-  const attemptResponse = await fetch(`${URL}/rest/v1/quiz_attempts`, { method:'POST', headers:{...headers, Prefer:'return=representation'}, body:JSON.stringify({quiz_id:quizId,student_id:user.id,score,max_score:maxScore,status:'SUBMITTED'}) })
+  let rawScore = 0
+  for (const question of questions) if (answerMap.get(question.id) === question.correct_option) rawScore += Number(question.points)
+  const score = rawMax ? Math.round((rawScore / rawMax) * quizMax) : 0
+  const attemptResponse = await fetch(`${URL}/rest/v1/quiz_attempts`, { method:'POST', headers:{...headers, Prefer:'return=representation'}, body:JSON.stringify({quiz_id:quizId,student_id:user.id,score,max_score:quizMax,status:'SUBMITTED'}) })
   if (!attemptResponse.ok) return NextResponse.json({ error: await attemptResponse.text() }, { status: 500 })
   const attempt = (await attemptResponse.json())[0]
   if (attempt && answers.length) {
@@ -31,5 +36,5 @@ export async function POST(request: Request) {
     })
     await fetch(`${URL}/rest/v1/quiz_answers`, { method:'POST', headers, body:JSON.stringify(rows) })
   }
-  return NextResponse.json({ score, maxScore })
+  return NextResponse.json({ score, maxScore: quizMax })
 }
