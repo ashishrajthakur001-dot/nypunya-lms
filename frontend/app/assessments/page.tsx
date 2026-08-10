@@ -1,1 +1,13 @@
-const quizzes=[{title:'Java Fundamentals Quiz',course:'Java & Spring Boot',status:'Available'},{title:'Web Basics Quiz',course:'Web Development',status:'Available'}]; export default function Assessments(){return <main style={{maxWidth:1100,margin:'0 auto',padding:40,fontFamily:'Arial,sans-serif'}}><h1>Assessments</h1><div style={{display:'grid',gap:16,marginTop:28}}>{quizzes.map(q=><article key={q.title} style={{border:'1px solid #ddd',borderRadius:12,padding:20}}><h2>{q.title}</h2><p>{q.course}</p><p>{q.status}</p><button style={{padding:'8px 12px'}}>Start quiz</button></article>)}</div></main>}
+import Link from 'next/link'
+import { getCourseMap, getQuizzes } from '../../lib/supabase-rest'
+
+export const dynamic = 'force-dynamic'
+
+export default async function Assessments(){
+  const [quizzes, courses] = await Promise.all([getQuizzes(), getCourseMap()])
+  return <main style={{maxWidth:1100,margin:'0 auto',padding:40,fontFamily:'Arial,sans-serif'}}>
+    <Link href="/">← Dashboard</Link><h1>Assessments</h1><p style={{color:'#666'}}>Quizzes are loaded from the assessment domain.</p>
+    <div style={{display:'grid',gap:16,marginTop:28}}>{quizzes.map(q=><article key={q.id} style={{border:'1px solid #ddd',borderRadius:12,padding:20}}><h2>{q.title}</h2><p>{courses.get(q.course_id)?.title ?? 'Course'}</p><p>{q.duration_minutes} minutes · {q.max_score} points</p><p><strong>{q.status}</strong></p></article>)}</div>
+    {!quizzes.length && <p>No assessments are currently published.</p>}
+  </main>
+}
