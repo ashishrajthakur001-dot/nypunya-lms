@@ -26,7 +26,7 @@ class CourseServiceTest {
         request.setDescription("Backend course");
         when(repository.save(any(Course.class))).thenAnswer(i -> i.getArgument(0));
 
-        assertEquals("Java Spring Boot", service.create(request).getTitle());
+        assertEquals("Java Spring Boot", service.create(request, 7L).getTitle());
         verify(repository).save(any(Course.class));
     }
 
