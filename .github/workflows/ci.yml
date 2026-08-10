@@ -1,4 +1,4 @@
-name: CI
+name: NypunyaLMS CI
 
 on:
   push:
@@ -6,16 +6,41 @@ on:
   pull_request:
     branches: [main]
 
+concurrency:
+  group: nypunya-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  frontend-build:
+  frontend:
+    name: Frontend build
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: frontend
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node 24
+        uses: actions/setup-node@v4
         with:
-          node-version: 24
-      - run: npm install
-      - run: npm run build
+          node-version: '24'
+      - name: Install dependencies
+        run: npm install
+      - name: Build frontend
+        run: npm run build
+
+  backend:
+    name: Backend build and tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Java 8
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '8'
+          cache: maven
+          cache-dependency-path: backend/pom.xml
+      - name: Build backend reactor
+        run: mvn -B -f backend/pom.xml clean verify
