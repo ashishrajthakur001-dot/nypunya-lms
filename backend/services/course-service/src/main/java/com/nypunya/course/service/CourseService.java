@@ -17,11 +17,11 @@ public class CourseService {
     public CourseService(CourseRepository repository) { this.repository = repository; }
 
     @Transactional
-    public CourseResponse create(CourseRequest request) {
+    public CourseResponse create(CourseRequest request, Long trainerId) {
         Course course = new Course();
         course.setTitle(request.getTitle().trim());
         course.setDescription(request.getDescription());
-        course.setTrainerId(request.getTrainerId());
+        course.setTrainerId(trainerId);
         return new CourseResponse(repository.save(course));
     }
 
