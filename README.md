@@ -2,24 +2,29 @@
 
 Prototype Learning Management System reconstructed from the NypunyaLMS project described in the supplied resume.
 
-## Canonical development branch
+## Canonical branch
 
-`feature/nypunya-canonical`
+`main`
 
-## Prototype scope
+## Live prototype
 
-- Next.js frontend
-- Supabase PostgreSQL target data layer
-- Java 8 / Spring Boot backend services used for the implemented service-domain prototype
-- Role model: Admin / Trainer / Student
-- Courses and enrollment
-- Assignments, submissions and grading
-- Quizzes, questions, options, attempts and automatic scoring
-- Learner course progress
-- Certificates and feedback remain planned prototype domains
-- Supabase Row Level Security remains part of the deployment/integration phase
+Frontend is deployed on Vercel from `frontend/`.
 
-## Backend domains implemented on the canonical branch
+## Implemented scope
+
+- Next.js / React / TypeScript frontend
+- Supabase PostgreSQL data layer
+- Supabase Auth sign-up and sign-in with HTTP-only session cookie
+- Role model foundation: Admin / Trainer / Student
+- Courses and learner enrollment
+- Assignments, text submissions and grading data model
+- Quizzes, questions, attempts, automatic server-side scoring and answers
+- Learner progress aggregation
+- Certificates and course feedback data model
+- Row Level Security policies for learner-owned records
+- Java 8 / Spring Boot backend services for the documented service-domain prototype
+
+## Backend domains
 
 - User/authentication foundations
 - Course and enrollment foundations
@@ -27,13 +32,28 @@ Prototype Learning Management System reconstructed from the NypunyaLMS project d
 - Assessment/quiz workflow
 - Progress aggregation
 
-## Frontend
+## Frontend routes
 
-A Next.js/React/TypeScript learner dashboard shell is included under `frontend/` and is the base for connecting the backend APIs.
+- `/` dashboard
+- `/login` authentication
+- `/courses` course catalogue
+- `/courses/[id]` course detail and enrollment
+- `/assignments` assignment submission workflow
+- `/assessments` quiz catalogue
+- `/assessments/[id]` interactive quiz attempt and server-side scoring
+- `/progress` learner progress
+- `/api/health` deployment health endpoint
 
-## Grounding
+## Supabase
 
-The supplied resume is the source of truth for the original project's documented technologies and capabilities. Architecture and implementation details not explicitly documented there are labeled as prototype/research-informed decisions.
+The project is connected to the configured Supabase project. Public configuration can be supplied with:
+
+```text
+NEXT_PUBLIC_SUPABASE_URL
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
+```
+
+The frontend contains safe public-key fallbacks for the configured prototype environment so the deployment remains runnable without local environment setup. Never place a Supabase service-role key in frontend code.
 
 ## Build
 
@@ -53,4 +73,6 @@ npm run build
 npm start
 ```
 
-Environment-specific database, authentication, Supabase configuration, CI/CD and production deployment are intentionally treated as the completion/hardening phase rather than silently mocked.
+## Prototype completion notes
+
+The production UI and database are connected. The Java/Spring Boot services remain the reference backend implementation and CI build target; the hosted learner prototype uses Supabase-backed Next.js routes for the end-to-end browser workflow because the current deployment environment does not provide a Java application host.
