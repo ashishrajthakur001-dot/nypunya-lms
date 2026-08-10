@@ -4,7 +4,10 @@ import com.nypunya.assignment.dto.AssignmentRequest;
 import com.nypunya.assignment.entity.Assignment;
 import com.nypunya.assignment.entity.AssignmentStatus;
 import com.nypunya.assignment.repository.AssignmentRepository;
-import org.springframework.data.domain.Page; import org.springframework.data.domain.Pageable; import org.springframework.stereotype.Service; import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.NoSuchElementException;
 
 @Service public class AssignmentService {
@@ -14,4 +17,6 @@ import java.util.NoSuchElementException;
  @Transactional(readOnly=true) public Page<Assignment> list(Long courseId,AssignmentStatus status,Pageable p){return status==null?repository.findByCourseId(courseId,p):repository.findByCourseIdAndStatus(courseId,status,p);}
  @Transactional public Assignment publish(Long id){Assignment a=get(id);if(a.getStatus()==AssignmentStatus.CLOSED)throw new IllegalStateException("Closed assignment cannot be published");a.setStatus(AssignmentStatus.PUBLISHED);return repository.save(a);}
  @Transactional public Assignment close(Long id){Assignment a=get(id);if(a.getStatus()==AssignmentStatus.CLOSED)return a;a.setStatus(AssignmentStatus.CLOSED);return repository.save(a);}
+ @Transactional public Assignment publishOwned(Long id,Long trainerId){Assignment a=get(id);if(!a.getTrainerId().equals(trainerId))throw new SecurityException("Assignment ownership required");return publish(id);}
+ @Transactional public Assignment closeOwned(Long id,Long trainerId){Assignment a=get(id);if(!a.getTrainerId().equals(trainerId))throw new SecurityException("Assignment ownership required");return close(id);}
 }
