@@ -1,127 +1,142 @@
-# NypunyaLMS Prototype — Implementation Plan
+# NypunyaLMS — Resume-Faithful Implementation Plan
 
-## Source-of-truth rule
+## Rule
+The supplied CV is the authoritative specification for the original NypunyaLMS project. The implementation must use the project stack stated in the CV. No alternative backend stack may replace it.
 
-The supplied resume is the authoritative source for what the original NypunyaLMS project explicitly contained. The resume states Java 8, Spring Boot, Spring MVC, Spring Security, Spring Data JPA, Hibernate, JWT, MySQL, REST APIs, React.js, Next.js, Redux; Docker, GitHub Actions, Postman, Swagger/OpenAPI; microservices, Eureka and Spring Cloud API Gateway; and Agile Scrum. It explicitly lists user management, course management, assignments, quizzes, content delivery, examination, enrollment, progress tracking, notifications, report generation, certificates, feedback, RBAC for Admin/Trainer/Student, DTOs, global exception handling, configuration, utilities, S3, PDFBox, SendGrid, Twilio, validation, JUnit, Kubernetes deployment, Git/GitHub workflows and code reviews.
+## Exact CV project stack
+- Java 8
+- Spring Boot
+- Spring MVC
+- Spring Security
+- Spring Data JPA
+- Hibernate
+- JWT
+- MySQL
+- RESTful APIs
+- React.js
+- Next.js
+- Redux
+- Tailwind CSS
+- Maven
+- MySQL Workbench
+- Postman
+- Swagger/OpenAPI
+- Docker
+- GitHub Actions
+- Microservices
+- Eureka Service Discovery
+- Spring Cloud API Gateway
+- Apache PDFBox
+- AWS S3
+- SendGrid
+- Twilio SMS/WhatsApp
+- JUnit
+- Bean Validation (Jakarta Validation)
+- Zod
+- Git/GitHub
+- Agile Scrum/JIRA
 
-Anything not explicitly supported by the resume must be labeled as prototype/research-informed. In particular, this plan must not invent production metrics, exact historical endpoints, exact service names, Kafka usage, Redis usage, observability topology, or business rules that the resume does not state.
+The CV also lists Kafka, Redis/Spring Cache, Resilience4j, Prometheus/Grafana/OpenTelemetry/ELK, Jenkins, GCP and other technologies in the broader skills section. They must not be represented as confirmed NypunyaLMS project components unless the CV's project section explicitly says so.
 
-## Phase 1 — faithful backend foundation
-- Java 8-compatible Maven multi-module structure.
-- Spring Boot services with layered architecture: Controller, Service, Repository, Entity, DTO, Security, Exception Handling, Configuration, Utility.
-- REST APIs for user management, course management, assignments, quizzes, content delivery and examination.
-- MySQL schema using normalized relationships and JPA/Hibernate.
-- Pagination and query optimization hooks.
+## Architecture required by the CV
+Microservices + Eureka Service Discovery + Spring Cloud API Gateway. Each service follows layered architecture and SOLID principles:
+
+Controller -> DTO/Validation -> Service -> Repository -> Entity/JPA/Hibernate -> MySQL
+
+Cross-cutting layers: Spring Security/JWT/RBAC, global @ControllerAdvice exception handling, configuration/profiles/CORS/Swagger, and reusable utilities.
+
+## Execution phases
+
+### 1. Backend foundation
+- Java 8-compatible Maven project.
+- Spring Boot/Spring MVC REST services.
+- MySQL schema.
+- Spring Data JPA/Hibernate mappings.
+- normalized One-to-One, One-to-Many, Many-to-One and Many-to-Many relationships.
+- pagination and optimized repository queries.
+- DTO request/response mapping.
 - Bean Validation.
-- Global `@ControllerAdvice` exception responses.
-- Swagger/OpenAPI.
-- JWT + Spring Security + RBAC: Admin, Trainer, Student.
-- BCrypt password handling and CORS configuration.
+- global exception handling.
+- application profiles, CORS, Swagger/OpenAPI and environment properties.
 
-## Phase 2 — business workflows
-- Course enrollment.
-- Assignment workflow.
-- Student progress tracking.
-- Notifications.
-- Report generation.
-- Certificates.
-- Feedback.
-- Admin portal operations for students, trainers, courses, batches, assignments, quizzes, certificates and feedback.
+### 2. Security
+- Spring Security.
+- JWT generation/validation.
+- BCrypt password encryption.
+- RBAC for Admin, Trainer and Student.
+- authorization at endpoint and resource ownership level.
 
-## Phase 3 — frontend
-- React.js / Next.js.
-- Redux state for authentication, course management, user profiles and assignment workflows.
+### 3. Resume-stated functional modules
+- user management
+- course management
+- assignments
+- quizzes
+- content delivery
+- examination
+- course enrollment
+- assignment workflows
+- student progress tracking
+- notifications
+- report generation
+- certificates
+- feedback
+- admin management of students, trainers, courses, batches, assignments, quizzes, certificates and feedback
+
+### 4. Utilities/integrations
+- AWS S3 for assignments, certificates, profile images and learning resources.
+- Apache PDFBox for PDF certificates and reports.
+- SendGrid for email.
+- Twilio for SMS and WhatsApp.
+
+### 5. Microservices infrastructure
+- Eureka Service Discovery.
+- Spring Cloud API Gateway for centralized routing and registration/discovery integration.
+
+### 6. Frontend
+- React.js + Next.js.
+- Redux centralized state for authentication, course management, user profiles and assignment workflows.
 - Tailwind CSS responsive UI.
 - Zod client validation.
-- Role-based Admin/Trainer/Student experiences.
+- role-based Admin/Trainer/Student portals integrated with backend REST APIs.
 
-## Phase 4 — integrations
-- AWS S3 for assignments, certificates, profile images and learning resources.
-- Apache PDFBox for certificate/report generation.
-- SendGrid email notifications.
-- Twilio SMS and WhatsApp notifications.
-
-## Phase 5 — microservices and delivery
-- Eureka Service Discovery.
-- Spring Cloud API Gateway.
-- Docker / Docker Compose.
-- Kubernetes deployment manifests.
-- GitHub Actions CI/CD.
-- Git feature branches, pull requests and review-ready changes.
-
-## Phase 6 — test and hardening
+### 7. Testing
 - JUnit unit tests for business services and REST controllers.
-- Postman API collection.
-- Authorization matrix tests.
-- Validation tests.
-- Persistence and relationship tests.
-- Failure-path tests for files, PDF generation and notification providers.
-- Pagination and duplicate-operation tests.
-- Deployment smoke tests.
+- Spring Boot integration tests.
+- Postman API testing.
+- Swagger/OpenAPI documentation.
 
-## Corner-case matrix
+### 8. Deployment and collaboration
+- Docker and Docker Compose.
+- Kubernetes-based deployment.
+- GitHub Actions CI/CD.
+- Git/GitHub feature branching, pull requests, code reviews and release management.
+- Agile Scrum/JIRA workflow.
+
+## Corner cases to implement and test
 
 ### Authentication/security
-- invalid credentials
-- expired/invalid JWT
-- missing bearer token
-- insufficient role
-- disabled user
-- password handling
-- CORS failures
-- direct access to another user's resource
+invalid credentials; missing token; malformed token; expired token; wrong role; disabled account; password handling; CORS failure; IDOR/resource ownership violation; unauthorized mutation.
 
-### Courses/enrollment
-- duplicate enrollment
-- enrollment for missing course/user
-- inactive/invalid course state
-- unauthorized trainer mutation
-- pagination boundaries and empty pages
+### Users/courses/enrollment
+duplicate email; duplicate enrollment; missing student/course; invalid course state; unauthorized trainer/admin operation; deleted/deactivated user with historical records; pagination boundaries; empty pages; concurrent update.
 
-### Assignments
-- missing assignment
-- closed assignment
-- duplicate submission
-- missing/oversized/unsupported file
-- submission by non-enrolled student
-- trainer grading unauthorized submission
-- score outside allowed range
-- concurrent submission attempts
+### Assignments/content
+missing assignment; closed assignment; deadline boundary; duplicate submission; retry after timeout; non-enrolled submission; unauthorized grading; invalid score; missing file; unsupported file; oversized file; S3 upload/download failure; missing object; metadata/object inconsistency.
 
 ### Quizzes/examination
-- missing assessment
-- unauthorized attempt
-- duplicate submission
-- invalid answer/question IDs
-- attempt after close/expiry
-- score consistency
-- concurrent submit/retry behavior
+missing assessment; unauthorized attempt; duplicate attempt; duplicate submit; invalid question/answer; expired/closed attempt; invalid score; concurrent submission; retry causing duplicate result.
 
-### Progress/certificates
-- progress below 0 or above 100
-- duplicate certificate issuance
-- incomplete course certificate request
-- PDF generation failure
-- stale/missing S3 artifact
+### Progress/reports/certificates
+progress below 0/above 100; incomplete course; duplicate certificate; concurrent certificate request; PDFBox failure; S3 artifact missing; report generation failure.
 
 ### Notifications
-- invalid recipient
-- provider timeout
-- provider rejection
-- retry safety / duplicate notification prevention
-- partial provider failure
+invalid recipient; SendGrid/Twilio timeout; provider rejection; retryable failure; duplicate notification; partial channel failure; provider unavailable.
 
-### Data/infrastructure
-- DB constraint violations
-- transaction rollback
-- N+1 queries
-- pagination on large data
-- S3 failure
-- service unavailable through gateway
-- discovery failure
-- malformed requests
-- standardized 4xx/5xx responses
+### Distributed system/data
+DB constraint violation; transaction rollback; N+1 query; large pagination; gateway failure; Eureka unavailable; downstream service timeout; malformed downstream response; standardized 4xx/5xx response.
 
-## Acceptance criteria
+## Definition of done
+A feature is not done when a screen exists. It must have its backend API, DTOs, validation, authorization, business rules, persistence, exception handling, test coverage, Swagger documentation and failure-path handling. Integrations must be behind configuration and must not expose secrets.
 
-The prototype is complete only when every resume-stated responsibility has a corresponding code/module, API or documented integration, with unsupported historical claims explicitly marked as prototype decisions. A feature is not considered done merely because a UI screen exists; it must have validation, authorization, persistence behavior and failure-path handling appropriate to the feature.
+## Explicit boundary
+Supabase is not the core NypunyaLMS persistence layer because the CV explicitly specifies MySQL. Existing Supabase work is treated as a separate prototype/demo artifact and must not replace the resume-stated Java/Spring/MySQL architecture.
