@@ -1,16 +1,16 @@
 server:
-  port: 8082
+  port: ${PORT:8082}
 spring:
   application:
     name: course-service
   datasource:
-    url: ${DB_URL:jdbc:mysql://localhost:3306/nypunya_lms}
-    username: ${DB_USERNAME:root}
-    password: ${DB_PASSWORD:root}
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/nypunya_lms}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: ${DDL_AUTO:update}
     open-in-view: false
     properties:
       hibernate:
@@ -20,3 +20,6 @@ springdoc:
     path: /v3/api-docs
   swagger-ui:
     path: /swagger-ui.html
+security:
+  jwt:
+    secret: ${JWT_SECRET:change-this-in-production-to-a-long-random-secret}
