@@ -6,29 +6,24 @@
       "framework": "nextjs"
     },
     "user_service": {
-      "root": "backend/",
-      "runtime": "container",
-      "entrypoint": "Dockerfile.user.vercel"
+      "root": "backend/services/user-service/",
+      "entrypoint": "Dockerfile.vercel"
     },
     "course_service": {
-      "root": "backend/",
-      "runtime": "container",
-      "entrypoint": "Dockerfile.course.vercel"
+      "root": "backend/services/course-service/",
+      "entrypoint": "Dockerfile.vercel"
     },
     "assignment_service": {
-      "root": "backend/",
-      "runtime": "container",
-      "entrypoint": "Dockerfile.assignment.vercel"
+      "root": "backend/services/assignment-service/",
+      "entrypoint": "Dockerfile.vercel"
     },
     "assessment_service": {
-      "root": "backend/",
-      "runtime": "container",
-      "entrypoint": "Dockerfile.assessment.vercel"
+      "root": "backend/services/assessment-service/",
+      "entrypoint": "Dockerfile.vercel"
     },
     "progress_service": {
-      "root": "backend/",
-      "runtime": "container",
-      "entrypoint": "Dockerfile.progress.vercel"
+      "root": "backend/services/progress-service/",
+      "entrypoint": "Dockerfile.vercel"
     }
   },
   "rewrites": [
