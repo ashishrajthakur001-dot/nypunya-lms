@@ -1,0 +1,38 @@
+{
+  "services": {
+    "user_service": {
+      "root": "./",
+      "entrypoint": "Dockerfile.user.vercel",
+      "runtime": "container"
+    },
+    "course_service": {
+      "root": "./",
+      "entrypoint": "Dockerfile.course.vercel",
+      "runtime": "container"
+    },
+    "assignment_service": {
+      "root": "./",
+      "entrypoint": "Dockerfile.assignment.vercel",
+      "runtime": "container"
+    },
+    "assessment_service": {
+      "root": "./",
+      "entrypoint": "Dockerfile.assessment.vercel",
+      "runtime": "container"
+    },
+    "progress_service": {
+      "root": "./",
+      "entrypoint": "Dockerfile.progress.vercel",
+      "runtime": "container"
+    }
+  },
+  "rewrites": [
+    { "source": "/api/auth/(.*)", "destination": { "service": "user_service" } },
+    { "source": "/api/users/(.*)", "destination": { "service": "user_service" } },
+    { "source": "/api/health", "destination": { "service": "user_service" } },
+    { "source": "/api/courses/(.*)", "destination": { "service": "course_service" } },
+    { "source": "/api/assignments/(.*)", "destination": { "service": "assignment_service" } },
+    { "source": "/api/assessments/(.*)", "destination": { "service": "assessment_service" } },
+    { "source": "/api/progress/(.*)", "destination": { "service": "progress_service" } }
+  ]
+}
