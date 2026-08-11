@@ -8,4 +8,5 @@ FROM eclipse-temurin:8-jre
 WORKDIR /app
 COPY --from=build /workspace/services/user-service/target/user-service-0.1.0-SNAPSHOT.jar /app/app.jar
 EXPOSE 80
-CMD ["java", "-Dserver.port=80", "-jar", "/app/app.jar"]
+ENTRYPOINT ["/opt/java/openjdk/bin/java"]
+CMD ["-Dserver.port=80", "-jar", "/app/app.jar"]
