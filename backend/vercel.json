@@ -2,23 +2,28 @@
   "services": {
     "user_service": {
       "root": "./",
-      "entrypoint": "services/user-service/Dockerfile.vercel"
+      "entrypoint": "services/user-service/Dockerfile.vercel",
+      "runtime": "container"
     },
     "course_service": {
       "root": "./",
-      "entrypoint": "services/course-service/Dockerfile.vercel"
+      "entrypoint": "services/course-service/Dockerfile.vercel",
+      "runtime": "container"
     },
     "assignment_service": {
       "root": "./",
-      "entrypoint": "services/assignment-service/Dockerfile.vercel"
+      "entrypoint": "services/assignment-service/Dockerfile.vercel",
+      "runtime": "container"
     },
     "assessment_service": {
       "root": "./",
-      "entrypoint": "services/assessment-service/Dockerfile.vercel"
+      "entrypoint": "services/assessment-service/Dockerfile.vercel",
+      "runtime": "container"
     },
     "progress_service": {
       "root": "./",
-      "entrypoint": "services/progress-service/Dockerfile.vercel"
+      "entrypoint": "services/progress-service/Dockerfile.vercel",
+      "runtime": "container"
     }
   },
   "rewrites": [
